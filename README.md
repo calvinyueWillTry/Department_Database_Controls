@@ -1,3 +1,17 @@
+Summary of how it works:
+See the video of the walkthrough.
+schema.sql: it CREATE DATABASE then USE company_db; which is the db being used in this case.
+The following tables are created (note that id INT NOT NULL AUTO_INCREMENT PRIMARY KEY is established at the top of every table, VARCHAR(20) NOT NULL means 20 characters max, and FOREIGN KEY (name_id) REFERENCES table_name(id) ON DELETE SET NULL means to set that as a Foreign Key in that particular table from another table): Department (id and name of department VARCHAR(20) NOT NULL), Employee roles (id, job_title VARCHAR(20) NOT NULL, salary DECIMAL NOT NULL (if decimals were used), department_id INT FOREIGN KEY (department_id) REFERENCES department_data(id) ON DELETE SET NULL), and employees (id, first_name, last_name, role_id INT (instead of name, reference id for their role), FOREIGN KEY (role_id) REFERENCES role_data(id) ON DELETE SET NULL, manager_id INT, FOREIGN KEY (manager_id) REFERENCES employees_data(id) ON DELETE SET NULL).
+For seeds.sql, the department_data table (name of column is (department)) is filled with ("strings for name of departments, automatically given an id"), the role_data table (name of columns (automatic id being its own column) are (job_title, salary, department_id), note the last one is a foreignKey), and the employees_data table (automatic id being its own column) have columns (first_name, last_name, role_id), last one being a foreignKey, and 2 managers assigned (UPDATE employees_data SET manager_id = 1 WHERE id IN (3, 4); UPDATE employees_data SET manager_id = 2 WHERE id IN (2, 5);).
+On server.js, 'express', "mysql2", 'inquirer', and express() are imported. urlencoded({ extended: false }) and express.json() are incorporated as middleware. 
+The .env and SQL clearance are incorporated in the variable "db".
+mainMenu() is the first function called. This pulls up a prompt to select a string from a list of choices, which, when highlighted and entered, response.viewMainMenu === "selected string", will prompt the function within that.
+At the end of this list array, it brings up another prompt, transfer that info to the function updateEmployee through (res.id, res.roleid). 
+For the view functions (viewEmployees(), viewRoles() and viewDepartments()), the db.query("includes a SQL command that can be written in JS instead of SQL"), then console.table(res); return mainMenu(); note that the "res" will result in that specific table from seed.sql. 
+For the add functions (addNewDepartment(), addNewRole() and addEmployee()), it first prompts the question, .then(variable containing that selection) => { let variableName = (variable containing that selection).name(which is the title of the input); make another variable = "INSERT INTO table_name SET ?", then db.query (variable that contain SQL command, {tableName: variableName that contains the selection data});} then produce the corresponding view function in order to view the updated table.
+For the updateEmployee (parameters including id, roleid) => {db.query(SQL command "UPDATE employees_data SET role_id = ? WHERE id = ?", [roleid, id from the parameters above], (Err)...); after replacing the numerical id for that selected employee for both their role_id and department_id, goes to the employee table to see updated data.
+
+}
 # 12 SQL: Employee Tracker
 
 ## Your Task
